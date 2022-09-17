@@ -1,0 +1,56 @@
+-------------------------------------------------------------- Persistence --------------------------------------------------------------
+
+<|> Original image. All data is gonna be extract from here. It is gonba be constant during all the execution
+imagen-original
+
+<|> This image is gonna be modified an sended as a result of all operations
+imagen-procesada
+
+<|> Final processed data from image. Contain color, bbox, font, text..., of all detected text in image 
+Paginas[] 
+-> Bloques[]
+	-> Parrafos[]
+		-> Lineas[]
+			-> Palabras[]
+				-> Text
+				-> Bbox
+				-> Space
+				-> Color
+				-> Font
+				-> FontSize
+			-> Bbox
+			-> Background-color
+		-> Bbox
+		-> Background-color
+	-> Bbox
+	-> Background-color
+-> Bbox
+-> Background-color
+
+<|> Usefull map for finding words. It maybe dont be usefull.
+Mulitmap<Text,*Palabras> 
+
+---------------------------------------------------------------- Domain ------------------------------------------------------------
+
+<|>	Return words where <text|regex> is contained|matched
+get_matches(text|regex)
+<|>	Return lines where <text|regex> is contained|matched
+get_lines(text|regex)
+
+<|>	Blur words and subwords where is match the word <text>
+blur_text(text,*palabra)
+<|> 	Tries to minimize changes moving or ignoring matches. When an unmatch text is found it is replaced or writed using color and font
+	of the last text ignored, moved or removed.
+overwrite_line(text,*linea)
+
+------------------------------------------------------------- User History ----------------------------------------------------------
+
+Selecciona una configuracion. {}+
+-> Blur: {numbers, urls, mayus-words, words([]|all)}*
+-> Randomize: {numbers, urls, mayus-words, words[]}*
+-> Replace {*}: words<pairs>[]
+
+Selecciona un conjunto de imagenes. {+}
+
+Se guardan las imagenes modificadas.
+
