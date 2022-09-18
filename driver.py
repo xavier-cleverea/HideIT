@@ -43,8 +43,8 @@ def paint_img_bbox(img_rgb, bbox, color):
 def write_text_on_img(img_rgb, bbox, font, fontsize, color):
     pass
 
-def save_img_rgb(img_rgb, name):
-    cv2.imwrite(name,img_rgb)
+def save_img_rgb(img_rgb, pathname):
+    cv2.imwrite(pathname,img_rgb)
 
 
 if __name__ == "__main__":
