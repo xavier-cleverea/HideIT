@@ -9,22 +9,20 @@ def main():
     parser.add_argument('-bw','--blur-words', nargs='+', default=[],help='blur especific words')
     parser.add_argument('-i','--images', nargs='+', help='name of images')
 
-    parser.add_argument('-d','--directory', nargs='?',default='resources/', help='name of the directory of images')
-    parser.add_argument('-s','--store', nargs='?', default='out/',help='name of the directory to store images')
+    parser.add_argument('-d','--in-directory', nargs='?',default='resources/', help='name of the directory of images')
+    parser.add_argument('-o','--out-directory', nargs='?', default='out/',help='name of the directory to store images')
     args = parser.parse_args()
 
-    print(vars(args))
-
     for images in args.images:
-        img = ImageProcessor(images,args.directory)
+        img = ImageProcessor(images,args.in_directory)
         if args.blur_all:
             img.blur_all_text()
         else:
             if args.blur_digits:
-                img.blur_if_regex(r'[0-9.,](.|,[0-9]+)?')
+                img.blur_if_regex(r'\d+[.,]?\d*')
             for word in args.blur_words:
                 img.blur_if_contains(word)
-        img.save()
+        img.save(args.out_directory)
     
 if __name__ == '__main__':
     main()

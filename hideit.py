@@ -1,6 +1,21 @@
 from driver import *
 
+import re
+
 class ImageProcessor:
+    
+    def __get_substring_bbox__(self,bbox,l_str,s_str):
+        new_bbox = bbox
+        start = l_str.find(s_str)
+        end = start+len(s_str)
+        lenght = len(l_str)
+        if end-start != lenght:
+            offset = (int)((bbox[1][0]-bbox[0][0])/lenght)
+            new_bbox[0][0] = bbox[0][0]+offset*start
+            new_bbox[2][0] = new_bbox[0][0]
+            new_bbox[1][0] = bbox[1][0]-offset*(lenght-end)
+            new_bbox[3][0] = new_bbox[1][0]
+        return new_bbox
 
     def __init__(self, name, path=""):
         self.name = name
@@ -12,25 +27,21 @@ class ImageProcessor:
             blur_img_bbox(self.img_rgb,word['bbox'])
 
     def blur_if_regex(self,regex):
-        pass
+        program = re.compile(regex)
+        for word in self.data:
+            l_text = program.findall(word['text'])
+            if len(l_text)>0:
+                for text in l_text:
+                    bbox = self.__get_substring_bbox__(word['bbox'],word['text'],text)
+                    blur_img_bbox(self.img_rgb,bbox)
+
+
 
     def blur_if_contains(self,text):
         for word in self.data:
             if text in word['text']:
-                bbox = word['bbox']
-                s = word['text'].find(text)
-                e = s+len(text)
-                l = len(word['text'])
-                if e-s != l:
-                    print((bbox[0][0]),bbox[3][0])
-                    jump = (int)((bbox[1][0]-bbox[0][0])/l)
-                    print(jump)
-                    bbox[0][0] = bbox[0][0]+jump*s
-                    bbox[2][0] = bbox[0][0]
-                    bbox[1][0] = bbox[1][0]-jump*(l-e)
-                    bbox[3][0] = bbox[1][0]
-                    print((bbox[0][0]),bbox[3][0])
+                bbox = self.__get_substring_bbox__(word['bbox'],word['text'],text)
                 blur_img_bbox(self.img_rgb,bbox)
 
-    def save(self):
-        save_img_rgb(self.img_rgb, self.name)
+    def save(self,path):
+        save_img_rgb(self.img_rgb, path+self.name)
