@@ -8,6 +8,7 @@ namespace hideit {
     }
     void* ocr::get_text_boxes(unsigned char* img) {
         UNIMPLEMENTED
+        return nullptr;
     }
 
 }

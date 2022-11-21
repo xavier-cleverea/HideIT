@@ -1,5 +1,6 @@
-#include "Headers/hideit.hpp"
+#define __MAIN__
 
+#include "Headers/hideit.hpp"
 
 hideit::profile profile_factory();
 
@@ -14,12 +15,12 @@ int main() {
 
     window.open();
 
-    while(true) {
+    do {
         auto background = screen.capture();
         auto text_boxes = ocr.get_text_boxes(background);
         auto points = driver.search(profile, text_boxes);
         window.blur(points);
-    }
+    } while(false);
 
     window.close();
 

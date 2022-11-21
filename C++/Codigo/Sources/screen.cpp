@@ -8,6 +8,7 @@ namespace hideit {
     }
     unsigned char* screen::capture() {
         UNIMPLEMENTED
+        return nullptr;
     }
 
 }
