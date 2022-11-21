@@ -1,10 +1,35 @@
-#include<iostream>
-#include"OCR_engine.h"
-#include"Text_Analyzer.h"
-#include"Image_Censorer.h"
+#include "Headers/hideit.hpp"
+
+
+hideit::profile profile_factory();
+
 int main() {
     
-    OCR_engine::OCR_engine ocr = OCR_engine::OCR_engine("eng");
-    ocr.test()
-    
+
+    hideit::driver driver;
+    hideit::ocr ocr;
+    hideit::window window;
+    hideit::screen screen;
+    hideit::profile profile = profile_factory();
+
+    window.open();
+
+    while(true) {
+        auto background = screen.capture();
+        auto text_boxes = ocr.get_text_boxes(background);
+        auto points = driver.search(profile, text_boxes);
+        window.blur(points);
+    }
+
+    window.close();
+
+    return 0;    
+}
+
+hideit::profile profile_factory() {
+    hideit::profile profile;
+    profile.name = "Xavi";
+    profile.word_ban("hola");
+    profile.regex_ban("[A-Z]");
+    return profile; 
 }
