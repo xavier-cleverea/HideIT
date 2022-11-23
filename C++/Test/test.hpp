@@ -37,5 +37,5 @@ int main() { \
     int e_memory = get_memory(); \
     printf("%s leaks %iKB of memory.",#func,s_memory-e_memory); \
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(e_time-s_time); \
-    printf("%s executed in %i milliseconds.\n",#func,duration.count()); \
+    printf("%s executed in %li milliseconds.\n",#func,duration.count()); \
 }
