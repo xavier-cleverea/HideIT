@@ -11,24 +11,15 @@ namespace hideit {
         TessApi->End();
         delete(TessApi);
     }
-    void* ocr::get_text_boxes(unsigned char* img) {
-        
+    void* ocr::get_text_boxes(unsigned char* imagedata, int width, int height, int bytes_per_pixel, int bytes_per_line) {
+        TessApi->SetImage(imagedata, width, height, bytes_per_pixel, bytes_per_line);
+        TessApi->Recognize(0);
         return nullptr;
     }
-    void ocr::test() {
-        Pix *image = pixRead("/home/leo/Desktop/PAE/HideIT/C++/Test/Test-Image2.png");
-//      Pix *image2 = pixConvertRGBToGray(image,0.3,0.3,0.4);
-        Pix *image2 = pixScale(image,0.8,0.8);//hacer un scaling aplica grayscale al mismo tiempo.
-        TessApi->SetImage(image2);
+    void* ocr::get_text_boxes(Pix* img) {
+        TessApi->SetImage(img);
         TessApi->Recognize(0);
-//         auto it = TessApi->getIterator();
-        //se puede obtener un bounding box a partir del iterador
-//         std::cout << TessApi->GetUTF8Text();
-        
- 
-        pixDestroy(&image);
-        pixDestroy(&image2);
-    
+        return nullptr;
     }
 
 }

@@ -10,8 +10,8 @@ namespace hideit {
     public:
         ocr();
         ~ocr();
-        void test();
-        void* get_text_boxes(unsigned char*);
+        void* get_text_boxes(unsigned char*,int,int,int,int);
+        void* get_text_boxes(Pix*);
     };
 
 }

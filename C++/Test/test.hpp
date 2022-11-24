@@ -28,14 +28,21 @@ int get_memory(){
     return result;
 }
 
-#define TEST(func) \
+#define CONCAT(a, b) CONCAT_INNER(a, b)
+#define CONCAT_INNER(a, b) a ## b
+
+#define MAIN_TEST(func) \
 int main() { \
-    int s_memory = get_memory(); \
-    auto s_time = std::chrono::high_resolution_clock::now(); \
-    func(); \
-    auto e_time = std::chrono::high_resolution_clock::now(); \
-    int e_memory = get_memory(); \
-    printf("%s leaks %iKB of memory.",#func,s_memory-e_memory); \
-    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(e_time-s_time); \
-    printf("%s executed in %li milliseconds.\n",#func,duration.count()); \
+    TEST(func) \
 }
+
+#define TEST(func) TEST_(func, __COUNTER__)
+#define TEST_(func, _count) \
+int CONCAT(s_memory,_count) = get_memory(); \
+auto CONCAT(s_time,_count) = std::chrono::high_resolution_clock::now(); \
+func(); \
+auto CONCAT(e_time,_count) = std::chrono::high_resolution_clock::now(); \
+int CONCAT(e_memory,_count) = get_memory(); \
+printf("%s leaks %iKB of memory.\n",#func,CONCAT(e_memory,_count)-CONCAT(s_memory,_count)); \
+auto CONCAT(duration,_count) = std::chrono::duration_cast<std::chrono::milliseconds>(CONCAT(e_time,_count)-CONCAT(s_time,_count)); \
+printf("%s executed in %li milliseconds.\n",#func,CONCAT(duration,_count).count()); \

@@ -4,4 +4,4 @@ void test_constructor() {
     hideit::driver driver;
 }
 
-TEST(test_constructor)
+MAIN_TEST(test_constructor)
