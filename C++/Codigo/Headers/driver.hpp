@@ -9,7 +9,7 @@ namespace hideit {
     public:
         driver();
         ~driver();
-        std::vector<unsigned int[2]> search(hideit::profile, void*);
+        std::vector<coords> search(hideit::profile p, tesseract::ResultIterator* it);
     };
 
 }
