@@ -17,8 +17,8 @@ int main() {
 
     do {
         auto background = screen.capture();
-        auto text_boxes = ocr.get_text_boxes(background);
-        auto points = driver.search(profile, text_boxes);
+        auto text_iterator = ocr.get_text_boxes(background);
+        auto points = driver.search(profile, text_iterator);
         window.blur(points);
     } while(false);
 
