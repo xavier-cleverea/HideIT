@@ -22,4 +22,10 @@ namespace hideit {
         return TessApi->GetIterator();
     }
 
+    BOXA* get_components() {
+        UNIMPLEMENTED
+        return nullptr;
+    }
+
+
 }
