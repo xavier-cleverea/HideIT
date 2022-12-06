@@ -17,8 +17,7 @@ int main() {
 
     do {
         auto background = screen.capture();
-        auto text_boxes = ocr.get_text_boxes(background);
-        auto points = driver.search(profile, text_boxes);
+        std::vector<hideit::quad> points = driver.search(profile,background);
         window.blur(points);
     } while(false);
 

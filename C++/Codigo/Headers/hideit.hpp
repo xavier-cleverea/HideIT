@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../Common/definitions.hpp"
+#include "../Common/utils.cpp"
 
 #include "screen.hpp"
 #include "window.hpp"

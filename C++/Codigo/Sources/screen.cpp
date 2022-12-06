@@ -1,13 +1,13 @@
 namespace hideit {
 
     screen::screen() {
-//         UNIMPLEMENTED
+        UNIMPLEMENTED
     }
     screen::~screen() {
-//         UNIMPLEMENTED
+        UNIMPLEMENTED
     }
     unsigned char* screen::capture() {
-//         UNIMPLEMENTED
+        UNIMPLEMENTED
         return nullptr;
     }
 

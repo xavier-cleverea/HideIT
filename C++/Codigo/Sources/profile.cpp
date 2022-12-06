@@ -1,16 +1,16 @@
 namespace hideit {
 
     profile::profile() {
-//         UNIMPLEMENTED
+        UNIMPLEMENTED
     }
     profile::~profile() {
-//         UNIMPLEMENTED
+        UNIMPLEMENTED
     }
     void profile::word_ban(std::string word) {
-//         UNIMPLEMENTED
+        UNIMPLEMENTED
     }
     void profile::regex_ban(std::string regex) {
-//         UNIMPLEMENTED
+        regexs.push_back(std::regex(regex));
     }
 
 }

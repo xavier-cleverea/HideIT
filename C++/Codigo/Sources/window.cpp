@@ -1,20 +1,20 @@
 namespace hideit {
 
     window::window() {
-//         UNIMPLEMENTED
+        UNIMPLEMENTED
     }
     window::~window() {
-//         UNIMPLEMENTED
+        UNIMPLEMENTED
     }
     void window::open() {
-//         UNIMPLEMENTED
+        UNIMPLEMENTED
     }
     void window::close() {
-//         UNIMPLEMENTED
+        UNIMPLEMENTED
     }
 
     void window::blur(std::vector<unsigned int[2]>&) {
-//         UNIMPLEMENTED
+        UNIMPLEMENTED
     }
     
 }
