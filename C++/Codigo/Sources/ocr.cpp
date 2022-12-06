@@ -22,4 +22,10 @@ namespace hideit {
         return nullptr;
     }
 
+    BOXA* get_components() {
+        UNIMPLEMENTED
+        return nullptr;
+    }
+
+
 }
