@@ -10,10 +10,13 @@ namespace hideit {
     public:
         ocr();
         ~ocr();
-        void* get_text_boxes(unsigned char*,int,int,int,int);
-        void* get_text_boxes(Pix*);
+
         char* get_text(int,int,int,int);
         BOXA* get_components();
+
+        tesseract::ResultIterator* get_text_boxes(unsigned char*,int,int,int,int);
+        tesseract::ResultIterator* get_text_boxes(Pix*);
+
     };
 
 }

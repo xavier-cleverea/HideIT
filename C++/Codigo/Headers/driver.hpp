@@ -10,8 +10,11 @@ namespace hideit {
     public:
         driver();
         ~driver();
+
+        std::vector<coords> search(hideit::profile p, tesseract::ResultIterator* it);
         std::vector<quad> search(hideit::profile, Pix*);
         std::vector<quad> search(hideit::profile, hideit::image);
+
     };
 
 }

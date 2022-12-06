@@ -11,15 +11,15 @@ namespace hideit {
         TessApi->End();
         delete(TessApi);
     }
-    void* ocr::get_text_boxes(unsigned char* imagedata, int width, int height, int bytes_per_pixel, int bytes_per_line) {
+    tesseract::ResultIterator* ocr::get_text_boxes(unsigned char* imagedata, int width, int height, int bytes_per_pixel, int bytes_per_line) {
         TessApi->SetImage(imagedata, width, height, bytes_per_pixel, bytes_per_line);
         TessApi->Recognize(0);
-        return nullptr;
+        return TessApi->GetIterator();
     }
-    void* ocr::get_text_boxes(Pix* img) {
+    tesseract::ResultIterator* ocr::get_text_boxes(Pix* img) {
         TessApi->SetImage(img);
         TessApi->Recognize(0);
-        return nullptr;
+        return TessApi->GetIterator();
     }
 
     BOXA* get_components() {
