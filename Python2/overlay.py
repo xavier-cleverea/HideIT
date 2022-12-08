@@ -9,7 +9,7 @@ import sys
 import time
 
 
-class Window(QMainWindow):
+class Overlay(QMainWindow):
         
     win_id = ""
     def __init__(self):
@@ -55,7 +55,7 @@ class Window(QMainWindow):
 
         #Hacemos que updateWin se ejecute cada cierto tiempo con un timer
         timer = QTimer(self)
-        timer.timeout.connect(self.updateWin)
+        timer.timeout.connect(self.updateOverlay)
         #Definir cada cuanto queremos que se ejecute el evento
         timer.start(1)
 
@@ -70,7 +70,7 @@ class Window(QMainWindow):
 
         painter.drawRect(100, 15, 400,200)\
 
-    def updateWin(self):
+    def updateOverlay(self):
        
         #Se actualiza la posición de la ventana
         comand = ["xwininfo", "-id", self.win_id[0]]
@@ -87,7 +87,7 @@ class Window(QMainWindow):
 
 
 App = QApplication(sys.argv)
-window = Window()
+overlay = Overlay()
 sys.exit(App.exec())
 
 
