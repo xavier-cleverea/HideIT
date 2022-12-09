@@ -17,17 +17,6 @@ banned_words = ["hola","test","hound","hare", "lair", "goat" ] #poner todo en mi
 
 
 
-def contains_substring(s, word):
-    #print(s + " " + word)
-    if word in s:
-        return True
-    else:
-        return False
-
-
-
-
-
 
 
 # image height and width should be multiple of 32
@@ -142,7 +131,7 @@ for (startX, startY, endX, endY) in boxes:
     word = word.strip()
     #print(word)
     for banned_word in banned_words:
-        if contains_substring(word,banned_word):
+        if banned_word in word:
             print("banned word : " + banned_word + " found.")
             banned_boxes.append((startX,startY,endX,endY))
             break
