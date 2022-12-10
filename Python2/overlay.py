@@ -12,6 +12,7 @@ import time
 class Overlay(QMainWindow):
         
     win_id = ""
+    x=1
     def __init__(self):
         super().__init__()
         #Al iniciar el programa se ejecuta el comando xdotool el cual nos permite seleccionar una ventana haciendo clickpara obtener su id
@@ -64,12 +65,15 @@ class Overlay(QMainWindow):
     def paintEvent(self, e):
         #pinta un rectangulo de color rojo
         painter = QPainter(self)
+        self.x+=0.0002
         painter.setPen(QPen(Qt.red, 5, Qt.SolidLine))
-        painter.setBrush(QBrush(Qt.red, Qt.SolidPattern))
+        #painter.setBrush(QBrush(Qt.red, Qt.SolidPattern))
         #painter.setBrush(QBrush(Qt.green, Qt.DiagCrossPattern))
+        x=self.x
+        painter.drawRect(100, 15, 400*x,200*x)\
 
-        painter.drawRect(100, 15, 400,200)\
 
+    
     def updateOverlay(self):
        
         #Se actualiza la posición de la ventana
@@ -84,10 +88,7 @@ class Overlay(QMainWindow):
 
         self.setGeometry(int(x_pos[0]), int(y_pos[0]), int(w_pos[0]), int(h_pos[0]))
         self.showNormal()
+        self.update()
 
-
-App = QApplication(sys.argv)
-overlay = Overlay()
-sys.exit(App.exec())
 
 
