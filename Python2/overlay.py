@@ -7,12 +7,13 @@ import re
 import string
 import sys
 import time
+#falta import OCR
 
 
 class Overlay(QMainWindow):
         
     win_id = ""
-    x=1
+    ocr
     def __init__(self):
         super().__init__()
         #Al iniciar el programa se ejecuta el comando xdotool el cual nos permite seleccionar una ventana haciendo clickpara obtener su id
@@ -30,47 +31,52 @@ class Overlay(QMainWindow):
         y_pos = re.findall("Absolute upper-left Y: +([0-9]+).*", str(result)) 
         h_pos = re.findall("Height: +([0-9]+).*", str(result))
         w_pos = re.findall("Width: +([0-9]+).*", str(result))
-       # print(x_pos[0], y_pos[0], h_pos[0], w_pos[0])
-
-
-        #para pillar el tamaño de la ventana, puede ser util si queremos evitar el error cuando se acerca a un margen de la pantalla
-        #screen = App.primaryScreen()
-        #size = screen.size()
 
         #Definimos la posición y el tamaño de la ventana
         self.setGeometry(int(x_pos[0]), int(y_pos[0]), int(w_pos[0]), int(h_pos[0]))
         self.setWindowTitle("hide-it")
 
+
         #definir que el fondo sea transparente
         self.setAttribute(QtCore.Qt.WA_TranslucentBackground)
         #definir que se pueda clicar a traves de la ventana
         self.setAttribute(QtCore.Qt.WA_TransparentForMouseEvents, True)
-        
-        #transparencia de la ventana (ya no hace falta)
-        #self.setStyleSheet("background-color: red;")
-        #self.setWindowOpacity(1)
-
         #mantener la ventana delante y sin marco
         self.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint | QtCore.Qt.FramelessWindowHint)
-        #self.showMaximized()
+        
+        ocr = OCR(self, win_id)
 
+        configureEvents()
+        
+        self.show()
+
+
+    def paintCensoredAreas(areas)
+        painter = QPainter(self)
+        painter.setPen(QPen(Qt.red, 5, Qt.SolidLine))
+        painter.setBrush(QBrush(Qt.red, Qt.SolidPattern))
+        for (startX, startY, endX, endY) in boxes:
+            painter.drawRect(startX, startY, endX-startX, endY-startY)
+
+
+
+
+    def configureEvents()
+        
         #Hacemos que updateWin se ejecute cada cierto tiempo con un timer
         timer = QTimer(self)
         timer.timeout.connect(self.updateOverlay)
         #Definir cada cuanto queremos que se ejecute el evento
         timer.start(1)
-
         self.show()
 
     def paintEvent(self, e):
         #pinta un rectangulo de color rojo
         painter = QPainter(self)
-        self.x+=0.0002
         painter.setPen(QPen(Qt.red, 5, Qt.SolidLine))
         #painter.setBrush(QBrush(Qt.red, Qt.SolidPattern))
         #painter.setBrush(QBrush(Qt.green, Qt.DiagCrossPattern))
-        x=self.x
-        painter.drawRect(100, 15, 400*x,200*x)
+        painter.drawRect(100, 15, 400,200)
 
 
     
@@ -84,7 +90,10 @@ class Overlay(QMainWindow):
         y_pos = re.findall("Absolute upper-left Y: +([0-9]+).*", str(result)) 
         h_pos = re.findall("Height: +([0-9]+).*", str(result))
         w_pos = re.findall("Width: +([0-9]+).*", str(result))
-        #print(x_pos[0], y_pos[0], h_pos[0], w_pos[0])
+
+        #para pillar el tamaño de la ventana, puede ser util si queremos evitar el error cuando se acerca a un margen de la pantalla
+        #screen = App.primaryScreen()
+        #size = screen.size()
 
         self.setGeometry(int(x_pos[0]), int(y_pos[0]), int(w_pos[0]), int(h_pos[0]))
         self.showNormal()

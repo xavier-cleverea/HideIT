@@ -7,6 +7,20 @@ import cv2
 import PIL.Image
 from tesserocr import PyTessBaseAPI, image_to_text
 
+import sys
+from PyQt5.QtWidgets import QApplication
+from PyQt5.QtGui import QPixmap, QScreen
+from datetime import datetime
+import subprocess
+
+comand = ["xdotool", "selectwindow"]
+comand_result = subprocess.Popen(comand, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+result = comand_result.communicate()
+#filename = "screenshot.jpg"
+app = QApplication(sys.argv)
+pixmap = QScreen.grabWindow(app.primaryScreen(), int(result[0]))
+
+
 
 #toca tener instalado el tesseract con el modelo de ingles
 api = PyTessBaseAPI(lang='eng', path='/usr/share/tesseract-ocr/5/tessdata')

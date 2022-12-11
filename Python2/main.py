@@ -3,8 +3,14 @@ from PyQt5 import QtCore, QtWidgets, QtGui
 from PyQt5.QtWidgets import QApplication
 import sys
 
-App = QApplication(sys.argv)                                                                                                                  
-overlay = Overlay()
-App.exec()
-print("hola")
-sys.exit()
+
+
+def main():
+    App = QApplication(sys.argv)                                                                                                                  
+    overlay = Overlay()
+    App.exec()
+    sys.exit()
+
+if __name__ == "__main__":
+    main()
+
