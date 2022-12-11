@@ -70,7 +70,7 @@ class Overlay(QMainWindow):
         #painter.setBrush(QBrush(Qt.red, Qt.SolidPattern))
         #painter.setBrush(QBrush(Qt.green, Qt.DiagCrossPattern))
         x=self.x
-        painter.drawRect(100, 15, 400*x,200*x)\
+        painter.drawRect(100, 15, 400*x,200*x)
 
 
     
