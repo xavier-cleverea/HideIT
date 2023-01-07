@@ -1,5 +1,5 @@
 
-import cv2
+#import cv2
         
 import numpy as np
 import argparse
@@ -73,7 +73,7 @@ class OCR(QObject):
             image = np.array(ptr).reshape(imgHeight, imgWidth, 4)
             image = image[:,:,:3]
             
-            cv2.imwrite("tmp/test.png",image)
+            #cv2.imwrite("tmp/test.png",image)
 
             self.api.SetImage(PIL.Image.fromarray(image))
             
