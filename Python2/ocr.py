@@ -1,5 +1,5 @@
 
-#import cv2
+import cv2
         
 import numpy as np
 import argparse
@@ -72,27 +72,31 @@ class OCR(QObject):
             ptr.setsize(qimg.byteCount())
             image = np.array(ptr).reshape(imgHeight, imgWidth, 4)
             image = image[:,:,:3]
-            #adaptar imagen a multiple de 32
             
+            cv2.imwrite("tmp/test.png",image)
 
             self.api.SetImage(PIL.Image.fromarray(image))
             
             boxes = self.api.GetComponentImages(RIL.WORD,True)
-
+            #print(boxes)
+            #print('\n\n')
 
             word_list = []
             for (_, box, _, _) in boxes:
                 #Y = vertical, X = horizontal
-                
                 x = box['x']
                 y = box['y']
                 w = box['w']
                 h = box['h']
+                #print(x,y,w,h)
+                
+                if w > (imgWidth/2): break #aveces pilla toda la pantalla como si fuera una sola palabra
+                
                 w += 5
                 h += 5
                 
                 if (x+w) > imgWidth: w = imgWidth - x
-                if (y+h) > imgWidth: h = imgWidth - y
+                if (y+h) > imgHeight: h = imgHeight - y
                 x -= 5
                 y -= 5
                 if x < 0: x = 0
@@ -102,22 +106,18 @@ class OCR(QObject):
                 
                 self.api.SetRectangle(x,y,w,h)
                 
+                #crop_img = image[y:(y+h), x:(x+w)]
+                #cv2.imwrite("tmp/" + str(y) + str(x) + str(h) + str(w) + ".png",crop_img)
+
+                #print(x,y,w,h)
                 word = self.api.GetUTF8Text()
+                
                 #conf = self.api.MeanTextConf()
                 
+
+
                 
-                #endY+=10
-                #if startY < 0: startY = 0
-                #if startX < 0: startX = 0
-                #if endY > imgHeight: endY = imgHeight
-                #if endX > imgWidth: endX = imgWidth
                 
-                crop_img = image[y:(y+h), x:(x+w)]
-                #print(startX, startY, endX, endY)
-                
-                #self.api.SetImage(PIL.Image.fromarray(crop_img)) #toca cambiar el formato de la imagen
-                
-                #word = self.api.GetUTF8Text()
                 word = word.lower()
                 word = word.strip()
                 
@@ -125,16 +125,16 @@ class OCR(QObject):
                 #print(word)
                 word = word.replace('i','t')
                 word = word.replace("\n",'')
-                #cv2.imwrite("tmp/" + str(y) + str(h) + str(x) + str(w) + ".png",crop_img)
                 word_list.append(word)
                 #print(word)
+                
                 for banned_word in self.banned_words:
                     if banned_word in word:
                         #print("banned word : " + banned_word + " found.")
                         banned_boxes.append((x,y,x+w,y+h))
                         break
                     
-                    
+                
                 #cv2.imwrite("tmp/" + word + ".png",crop_img) #para testear que lee las palabras bien
             #end = time.time()
             #print(end-start)
@@ -144,10 +144,11 @@ class OCR(QObject):
             #self.OL.update()
             
             #print(self.OL.boxes)
-            print(word_list)
+            #print(word_list)
             self.boxes_banned = banned_boxes #esto no es confuso, solo hace falta no mirar
             #print("end ocr update")
             self.end_update.emit()
+            #time.sleep(1)
             #time.sleep(2)
             #print("signal sent")
 

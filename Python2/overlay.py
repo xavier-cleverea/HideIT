@@ -1,8 +1,8 @@
 from PyQt5 import QtCore, QtWidgets, QtGui
 from PyQt5.QtGui import QPainter, QBrush, QPen
 from PyQt5.QtCore import Qt, QTimer
-from PyQt5.QtWidgets import QApplication, QMainWindow
-from PyQt5.QtCore import QThread, Qt, pyqtSignal, pyqtSlot
+from PyQt5.QtWidgets import *
+from PyQt5.QtCore import *
 import subprocess
 import re
 import string
@@ -16,10 +16,42 @@ class Overlay(QMainWindow):
     #win_id = ""
     def __init__(self, App):
         super().__init__()
+        
+        
+        
+        #Setup de la GUI
+        self.window = QWidget()
+        self.window.setWindowTitle("HideIT")
+        self.window.setGeometry(100, 100, 280, 80)
+        
+        #boundires checkbox
+        self.boundries_check = QCheckBox("Show overlay boundries", parent=self.window)
+        self.boundries_check.setChecked(True)
+        self.show_boundries = True
+        self.boundries_check.stateChanged.connect(self.switch_boundries_bool)
+        self.boundries_check.move(20, 15)
+        
+        #pause censor checkbox
+        self.censor_check = QCheckBox("Show censored words", parent=self.window)
+        self.censor_check.setChecked(False)
+        self.show_words = False
+        self.censor_check.stateChanged.connect(self.switch_censor_bool)
+        self.censor_check.move(20, 45)
+        
+        #change window
+        self.change_window_button = QPushButton("Change window", parent=self.window)
+        self.change_window_button.move(20, 75)
+        self.change_window_button.clicked.connect(self.change_window)
+        
+        self.window.show()
+        
+        
+        
+        
         #Al iniciar el programa se ejecuta el comando xdotool el cual nos permite seleccionar una ventana haciendo clickpara obtener su id
         #esta será la ventana donde se creará el overlay, le pasamos el id a xwininfo para saber la posición y tamaño de la
         #ventana seleccionada
-
+        
         print("Haz click en la ventana que quieras censurar")
         comand = ["xwininfo", "-id", "$(xdotool selectwindow)"]
         comand_result = subprocess.Popen(comand, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -75,7 +107,37 @@ class Overlay(QMainWindow):
         
         self.show()
 
+    
+    def switch_boundries_bool(self):
+        self.show_boundries =  not self.show_boundries
+        
+    def switch_censor_bool(self):
+        self.show_words =  not self.show_words
+        
+        
+    def change_window(self):
+        print("Haz click en la ventana que quieras censurar")
+        comand = ["xwininfo", "-id", "$(xdotool selectwindow)"]
+        comand_result = subprocess.Popen(comand, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        result = comand_result.communicate()
+        
+        #pillamos los volres que nos interesan mediante regex, la id la guardamos en una variable de clase (win_id)
+        self.win_id = re.findall("Window id: +([0-9a-z]+).*", str(result))
+        
+        self.ocr.WID = int(self.win_id[0],16)
+        
+        self.x_pos = re.findall("Absolute upper-left X: +([0-9]+).*", str(result))
+        self.y_pos = re.findall("Absolute upper-left Y: +([0-9]+).*", str(result)) 
+        self.h_pos = re.findall("Height: +([0-9]+).*", str(result))
+        self.w_pos = re.findall("Width: +([0-9]+).*", str(result))
 
+        #Definimos la posición y el tamaño de la ventana
+        self.setGeometry(int(self.x_pos[0]), int(self.y_pos[0]), int(self.w_pos[0]), int(self.h_pos[0]))
+        
+        self.showNormal()
+        self.update()
+        
+    
     def updateCensoredAreas(self):
         #print("test signal")
         self.boxes = self.ocr.boxes_banned
@@ -98,15 +160,16 @@ class Overlay(QMainWindow):
         painter.setPen(QPen(Qt.red, 10, Qt.SolidLine))
         
         #print(int(self.x_pos[0]), int(self.y_pos[0]), int(self.w_pos[0]), int(self.h_pos[0]))
-        painter.drawRect(0, 0, int(self.w_pos[0]), int(self.h_pos[0]))
+        if(self.show_boundries): painter.drawRect(0, 0, int(self.w_pos[0]), int(self.h_pos[0]))
         #painter.drawRect(50, 50, 100, 100)
         
         painter.setBrush(QBrush(Qt.red, Qt.SolidPattern))
-        for (startX, startY, w, h) in self.boxes:
-            #print(startY, end ='\n\n\n\n')
-            offset = 1.05
-            offset2 = 1.008
-            painter.drawRect(int(startX*offset2), int(startY * offset), int((w - startX)*offset2), int((h-startY)*offset))
+        if(not self.show_words):
+            for (startX, startY, w, h) in self.boxes:
+                #print(startY, end ='\n\n\n\n')
+                offset = 1.005
+                offset2 = 1.008
+                painter.drawRect(int(startX*offset2), int(startY * offset), int((w - startX)*offset2), int((h-startY)*offset))
         
         ##pinta un rectangulo de color rojo
         #painter = QPainter(self)
