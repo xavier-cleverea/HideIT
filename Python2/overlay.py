@@ -1,6 +1,6 @@
 from PyQt5 import QtCore, QtWidgets, QtGui
-from PyQt5.QtGui import QPainter, QBrush, QPen
-from PyQt5.QtCore import Qt, QTimer
+from PyQt5.QtGui import *
+#from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 import subprocess
@@ -22,26 +22,60 @@ class Overlay(QMainWindow):
         #Setup de la GUI
         self.window = QWidget()
         self.window.setWindowTitle("HideIT")
-        self.window.setGeometry(100, 100, 280, 80)
+        self.window.setStyleSheet("background-color: white;")
+        self.window.closeEvent = self.exit
+        #logo
+        self.logo = QLabel(parent=self.window)
+        self.logopix = QPixmap('logo50.png')
+        self.logo.setPixmap(self.logopix)
+        self.logo.move(20,5)
+        
+        
+        #dimensión GUI
+        self.window.setGeometry(300, 300, self.logopix.width() + 40, 480)
+        self.window.setFixedSize(self.logopix.width() + 40, 480)
+        
         
         #boundires checkbox
-        self.boundries_check = QCheckBox("Show overlay boundries", parent=self.window)
+        self.boundries_check = QCheckBox("Highlight captured window", parent=self.window)
         self.boundries_check.setChecked(True)
         self.show_boundries = True
         self.boundries_check.stateChanged.connect(self.switch_boundries_bool)
-        self.boundries_check.move(20, 15)
+        self.boundries_check.move(20, self.logopix.height() + 15)
         
         #pause censor checkbox
         self.censor_check = QCheckBox("Show censored words", parent=self.window)
         self.censor_check.setChecked(False)
         self.show_words = False
         self.censor_check.stateChanged.connect(self.switch_censor_bool)
-        self.censor_check.move(20, 45)
+        self.censor_check.move(20, self.logopix.height() + 45)
         
         #change window
         self.change_window_button = QPushButton("Change window", parent=self.window)
-        self.change_window_button.move(20, 75)
+        self.change_window_button.move(20, self.logopix.height() + 75)
         self.change_window_button.clicked.connect(self.change_window)
+        
+        #text box
+        self.text_box = QTextEdit(parent=self.window)
+        self.text_box.verticalScrollBar().minimum()
+        self.text_box.move(20, self.logopix.height() + 110)
+        textfile = open('banned_words.txt','r')
+        self.text_box.append(textfile.read())
+        textfile.close()
+        
+        #apply changes button
+        
+        self.apply_changes_button = QPushButton("Apply Changes", parent=self.window)
+        self.apply_changes_button.move(20, self.logopix.height() + 315)
+        self.apply_changes_button.clicked.connect(self.apply_changes)
+        
+        #exit button
+        
+        self.apply_changes_button = QPushButton("Exit", parent=self.window)
+        self.apply_changes_button.move(196, self.logopix.height() + 315)
+        self.apply_changes_button.clicked.connect(self.exit)
+        
+        
         
         self.window.show()
         
@@ -52,7 +86,7 @@ class Overlay(QMainWindow):
         #esta será la ventana donde se creará el overlay, le pasamos el id a xwininfo para saber la posición y tamaño de la
         #ventana seleccionada
         
-        print("Haz click en la ventana que quieras censurar")
+        #print("Haz click en la ventana que quieras censurar")
         comand = ["xwininfo", "-id", "$(xdotool selectwindow)"]
         comand_result = subprocess.Popen(comand, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         result = comand_result.communicate()
@@ -63,6 +97,11 @@ class Overlay(QMainWindow):
         self.y_pos = re.findall("Absolute upper-left Y: +([0-9]+).*", str(result)) 
         self.h_pos = re.findall("Height: +([0-9]+).*", str(result))
         self.w_pos = re.findall("Width: +([0-9]+).*", str(result))
+        
+        self.x_pos_old = self.x_pos
+        self.y_pos_old = self.y_pos
+        self.h_pos_old = self.h_pos
+        self.w_pos_old = self.w_pos
 
         #Definimos la posición y el tamaño de la ventana
         self.setGeometry(int(self.x_pos[0]), int(self.y_pos[0]), int(self.w_pos[0]), int(self.h_pos[0]))
@@ -78,13 +117,9 @@ class Overlay(QMainWindow):
         #mantener la ventana delante y sin marco
         self.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint | QtCore.Qt.FramelessWindowHint)
         
-        print(int(self.win_id[0],16))
+        #print(int(self.win_id[0],16))
         
-        
-        
-        
-        
-        
+
         self.thread = QThread()
         self.ocr = OCR(int(self.win_id[0],16), App)
         self.ocr.moveToThread(self.thread)
@@ -99,7 +134,7 @@ class Overlay(QMainWindow):
         #self.ocr.finished.connect(self.ocr.end_run)
         #self.thread.finished.connect(self.thread.deleteLater)
         #self.ocr.progress.connect(self.reportProgress)
-        print("before thread start")
+        #print("before thread start")
         self.thread.start()
         
         
@@ -116,7 +151,7 @@ class Overlay(QMainWindow):
         
         
     def change_window(self):
-        print("Haz click en la ventana que quieras censurar")
+        #print("Haz click en la ventana que quieras censurar")
         comand = ["xwininfo", "-id", "$(xdotool selectwindow)"]
         comand_result = subprocess.Popen(comand, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         result = comand_result.communicate()
@@ -137,6 +172,16 @@ class Overlay(QMainWindow):
         self.showNormal()
         self.update()
         
+        
+    def apply_changes(self):
+        
+        textfile = open('banned_words.txt','w')
+        textfile.write(self.text_box.toPlainText())
+        textfile.close()
+        
+        
+    def exit(self, event = None):
+        sys.exit()
     
     def updateCensoredAreas(self):
         #print("test signal")
@@ -193,7 +238,7 @@ class Overlay(QMainWindow):
         self.y_pos = re.findall("Absolute upper-left Y: +([0-9]+).*", str(result)) 
         self.h_pos = re.findall("Height: +([0-9]+).*", str(result))
         self.w_pos = re.findall("Width: +([0-9]+).*", str(result))
-
+        #if(self.x_pos_old != self)
         #para pillar el tamaño de la ventana, puede ser util si queremos evitar el error cuando se acerca a un margen de la pantalla
         #screen = App.primaryScreen()
         #size = screen.size()
