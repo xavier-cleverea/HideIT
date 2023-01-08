@@ -9,6 +9,7 @@ import string
 import sys
 import time
 from  ocr import OCR
+from screeninfo import get_monitors
 
 
 class Overlay(QMainWindow):
@@ -68,6 +69,12 @@ class Overlay(QMainWindow):
         self.apply_changes_button = QPushButton("Apply Changes", parent=self.window)
         self.apply_changes_button.move(20, self.logopix.height() + 315)
         self.apply_changes_button.clicked.connect(self.apply_changes)
+        self.apply_changes_button.setShortcut(QKeySequence("Ctrl+S"))
+        
+        #Ctrl-S shortcut
+        #self.CtrlS = QShortcut(QKeySequence("Ctrl+S"), parent=self.window)
+        #self.CtrlS.activated.connect(self.apply_changes)
+        
         
         #exit button
         
@@ -93,18 +100,34 @@ class Overlay(QMainWindow):
         
         #pillamos los volres que nos interesan mediante regex, la id la guardamos en una variable de clase (win_id)
         self.win_id = re.findall("Window id: +([0-9a-z]+).*", str(result))
-        self.x_pos = re.findall("Absolute upper-left X: +([0-9]+).*", str(result))
-        self.y_pos = re.findall("Absolute upper-left Y: +([0-9]+).*", str(result)) 
-        self.h_pos = re.findall("Height: +([0-9]+).*", str(result))
-        self.w_pos = re.findall("Width: +([0-9]+).*", str(result))
         
-        self.x_pos_old = self.x_pos
-        self.y_pos_old = self.y_pos
-        self.h_pos_old = self.h_pos
-        self.w_pos_old = self.w_pos
+        x_pos_tmp = re.findall("Absolute upper-left X: +([0-9]+).*", str(result))
+        y_pos_tmp = re.findall("Absolute upper-left Y: +([0-9]+).*", str(result))
+        if len(x_pos_tmp) == 0: self.x_pos = 0
+        else: self.x_pos = int(x_pos_tmp[0])
+        if len(y_pos_tmp) == 0: self.y_pos = 0
+        else: self.y_pos = int(y_pos_tmp[0])
+        self.h_pos = int(re.findall("Height: +([0-9]+).*", str(result))[0])
+        self.w_pos = int(re.findall("Width: +([0-9]+).*", str(result))[0])
+        
+        self.screen_h = 0
+        self.screen_w = 0
+        
+        for m in get_monitors():
+            if m.width > self.screen_w: self.screen_w = m.width
+            if m.height > self.screen_h: self.screen_h = m.height
+            
+        #print(self.screen_h)
+        #print(self.screen_w)
+        
+        self.x_pos_old = 0
+        self.y_pos_old = 0
+        self.h_pos_old = self.screen_h
+        self.w_pos_old = self.screen_w
 
         #Definimos la posición y el tamaño de la ventana
-        self.setGeometry(int(self.x_pos[0]), int(self.y_pos[0]), int(self.w_pos[0]), int(self.h_pos[0]))
+        #self.setB
+        self.setGeometry(0, 0, self.screen_w,self.screen_h)
         self.setWindowTitle("hide-it")
 
         self.boxes = []
@@ -150,6 +173,14 @@ class Overlay(QMainWindow):
         self.show_words =  not self.show_words
         
         
+    def clear_window(self):
+        #self.setGeometry(0,0,2000,2000)
+        if self.x_pos < 0: self.x_pos = 0
+        if self.y_pos < 0: self.y_pos = 0
+        self.setGeometry(0, 0 , self.screen_w +100 , self.screen_h + 100)
+        self.setGeometry(self.x_pos, self.y_pos, self.w_pos, self.h_pos)
+        
+        
     def change_window(self):
         #print("Haz click en la ventana que quieras censurar")
         comand = ["xwininfo", "-id", "$(xdotool selectwindow)"]
@@ -161,13 +192,17 @@ class Overlay(QMainWindow):
         
         self.ocr.WID = int(self.win_id[0],16)
         
-        self.x_pos = re.findall("Absolute upper-left X: +([0-9]+).*", str(result))
-        self.y_pos = re.findall("Absolute upper-left Y: +([0-9]+).*", str(result)) 
-        self.h_pos = re.findall("Height: +([0-9]+).*", str(result))
-        self.w_pos = re.findall("Width: +([0-9]+).*", str(result))
+        x_pos_tmp = re.findall("Absolute upper-left X: +([0-9]+).*", str(result))
+        y_pos_tmp = re.findall("Absolute upper-left Y: +([0-9]+).*", str(result))
+        if len(x_pos_tmp) == 0: self.x_pos = 0
+        else: self.x_pos = int(x_pos_tmp[0])
+        if len(y_pos_tmp) == 0: self.y_pos = 0
+        else: self.y_pos = int(y_pos_tmp[0])
+        self.h_pos = int(re.findall("Height: +([0-9]+).*", str(result))[0])
+        self.w_pos = int(re.findall("Width: +([0-9]+).*", str(result))[0])
 
         #Definimos la posición y el tamaño de la ventana
-        self.setGeometry(int(self.x_pos[0]), int(self.y_pos[0]), int(self.w_pos[0]), int(self.h_pos[0]))
+        self.clear_window()
         
         self.showNormal()
         self.update()
@@ -198,14 +233,12 @@ class Overlay(QMainWindow):
         self.show()
     
         
-        
     def paintEvent(self, e):
         #print("paintEvent")
         painter = QPainter(self)
         painter.setPen(QPen(Qt.red, 10, Qt.SolidLine))
         
-        #print(int(self.x_pos[0]), int(self.y_pos[0]), int(self.w_pos[0]), int(self.h_pos[0]))
-        if(self.show_boundries): painter.drawRect(0, 0, int(self.w_pos[0]), int(self.h_pos[0]))
+        if(self.show_boundries): painter.drawRect(0, 0, int(self.w_pos), int(self.h_pos))
         #painter.drawRect(50, 50, 100, 100)
         
         painter.setBrush(QBrush(Qt.red, Qt.SolidPattern))
@@ -234,16 +267,26 @@ class Overlay(QMainWindow):
         comand = ["xwininfo", "-id", self.win_id[0]]
         comand_result = subprocess.Popen(comand, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         result = comand_result.communicate()
-        self.x_pos = re.findall("Absolute upper-left X: +([0-9]+).*", str(result))
-        self.y_pos = re.findall("Absolute upper-left Y: +([0-9]+).*", str(result)) 
-        self.h_pos = re.findall("Height: +([0-9]+).*", str(result))
-        self.w_pos = re.findall("Width: +([0-9]+).*", str(result))
-        #if(self.x_pos_old != self)
+        
+        
+        x_pos_tmp = re.findall("Absolute upper-left X: +([0-9]+).*", str(result))
+        y_pos_tmp = re.findall("Absolute upper-left Y: +([0-9]+).*", str(result))
+        if len(x_pos_tmp) == 0: self.x_pos = 0
+        else: self.x_pos = int(x_pos_tmp[0])
+        if len(y_pos_tmp) == 0: self.y_pos = 0
+        else: self.y_pos = int(y_pos_tmp[0])
+        self.h_pos = int(re.findall("Height: +([0-9]+).*", str(result))[0])
+        self.w_pos = int(re.findall("Width: +([0-9]+).*", str(result))[0])
+        
+
+        
+        if((self.h_pos_old != self.h_pos) or (self.w_pos_old != self.w_pos) ):
+            self.clear_window()
         #para pillar el tamaño de la ventana, puede ser util si queremos evitar el error cuando se acerca a un margen de la pantalla
         #screen = App.primaryScreen()
         #size = screen.size()
-
-        self.setGeometry(int(self.x_pos[0]), int(self.y_pos[0]), int(self.w_pos[0]), int(self.h_pos[0]))
+        
+        self.setGeometry(self.x_pos, self.y_pos, self.w_pos, self.h_pos)
         self.showNormal()
         self.update()
 

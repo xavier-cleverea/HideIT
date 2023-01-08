@@ -24,7 +24,7 @@ class OCR(QObject):
     
     def __init__(self, WID, App ):
         super().__init__()
-        print("ocr init")
+        #print("ocr init")
         self.app = App
         self.WID = WID
         
@@ -92,13 +92,13 @@ class OCR(QObject):
                 
                 if w > (imgWidth/2): break #aveces pilla toda la pantalla como si fuera una sola palabra
                 
-                w += 5
-                h += 5
+                w += 8
+                h += 8
                 
                 if (x+w) > imgWidth: w = imgWidth - x
                 if (y+h) > imgHeight: h = imgHeight - y
-                x -= 5
-                y -= 5
+                x -= 4
+                y -= 4
                 if x < 0: x = 0
                 if y < 0: y = 0
                 
@@ -106,13 +106,14 @@ class OCR(QObject):
                 
                 self.api.SetRectangle(x,y,w,h)
                 
-                #crop_img = image[y:(y+h), x:(x+w)]
-                #cv2.imwrite("tmp/" + str(y) + str(x) + str(h) + str(w) + ".png",crop_img)
 
                 #print(x,y,w,h)
-                word = self.api.GetUTF8Text()
                 
-                #conf = self.api.MeanTextConf()
+                
+                word = self.api.GetUTF8Text()
+                #crop_img = image[y:(y+h), x:(x+w)]
+                #cv2.imwrite("tmp/" + word + ".png",crop_img)
+                
                 
 
 
