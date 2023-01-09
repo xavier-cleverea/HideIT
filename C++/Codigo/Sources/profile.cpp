@@ -10,7 +10,7 @@ namespace hideit {
         UNIMPLEMENTED
     }
     void profile::regex_ban(std::string regex) {
-        UNIMPLEMENTED
+        regexs.push_back(std::regex(regex));
     }
 
 }

@@ -3,14 +3,28 @@
 namespace hideit {
 
     driver::driver() {
-        UNIMPLEMENTED
     }
     driver::~driver() {
-        UNIMPLEMENTED
     }
-    std::vector<unsigned int[2]> driver::search(hideit::profile, void*) {
-        UNIMPLEMENTED
-        return std::vector<unsigned int[2]>();
+    std::vector<coords> driver::search(hideit::profile p, tesseract::ResultIterator* it) {
+        
+        tesseract::PageIteratorLevel level = tesseract::RIL_WORD;
+        auto bbox_vec = std::vector<coords>();
+        
+        if(it != 0){
+            while(it->Next(level)) {
+                const char* word = it->GetUTF8Text(level);
+                //falta implementar el condicional word_is_banned
+                bool word_is_banned = true;
+                if(word_is_banned) {
+                    coords new_c;
+                    it->BoundingBox(level, &(new_c.x1), &(new_c.y1), &(new_c.x2), &(new_c.y2));
+                    bbox_vec.push_back(new_c);
+                }
+                delete[] word;
+            }
+        }
+        return bbox_vec;
     }
 
 }
