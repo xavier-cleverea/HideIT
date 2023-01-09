@@ -13,8 +13,8 @@ Web application to hide sensible information.
 ```bash
 sudo apt install python3.7
 sudo apt install python3-pip
-pip3 install pyteressact
-pip3 install opencv-python 
+apt-get install tesseract-ocr libtesseract-dev libleptonica-dev pkg-config
+pip3 install tesserocr
 ```
 
 ## EXECUTION
